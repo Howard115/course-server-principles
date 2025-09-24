@@ -1,0 +1,6 @@
+servera.lab.example.com
+serverb.lab.example.com
+
+
+[dnsservers]
+servera.lab.example.com

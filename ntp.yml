@@ -1,0 +1,9 @@
+---
+- name : Setup NTP client
+  hosts : all
+  tasks:
+    - name : Install Chronyd allication
+      ansible.builtin.dnf:
+        name: chrony
+        state: latest
+...

@@ -1,0 +1,13 @@
+---
+- name : Add users
+  hosts: all
+  vars:
+    user1: rcwang
+    user1_id: 8888
+  tasks:
+   - name: add rcwang
+     ansible.builtin.user:
+       name: "{{user1}}"
+       uid: "{{user1_id}}"
+       state: present
+...
