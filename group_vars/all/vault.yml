@@ -1,0 +1,7 @@
+# 敏感信息 - 這個文件將被加密
+vault_ssh_password: "000000"
+vault_become_password: "000000"
+
+# 用戶相關的敏感信息
+vault_user_passwords:
+  rcwang: "000000"

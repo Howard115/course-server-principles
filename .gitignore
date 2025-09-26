@@ -1,0 +1,8 @@
+# Ansible Vault 密碼文件
+.vault_pass
+
+# 其他敏感文件
+*.key
+*.pem
+*_rsa
+*_rsa.pub

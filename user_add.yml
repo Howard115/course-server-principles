@@ -7,7 +7,10 @@
   tasks:
    - name: add rcwang
      ansible.builtin.user:
-       name: "{{user1}}"
-       uid: "{{user1_id}}"
+       name: "{{ user1 }}"
+       uid: "{{ user1_id }}"
+       password: "{{ user_passwords.rcwang | password_hash('sha512') }}"
        state: present
+       shell: /bin/bash
+       create_home: yes
 ...
