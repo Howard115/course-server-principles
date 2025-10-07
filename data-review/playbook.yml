@@ -1,1 +1,32 @@
 
+
+    # 任務 6: 建立 index.html 檔案
+    - name: Create index.html with system information
+      ansible.builtin.copy:
+        content: "{{ ansible_fqdn }} ({{ ansible_default_ipv4.address }}) has been customized by Ansible."
+        dest: "{{ web_root }}/index.html"
+        owner: apache
+        group: apache
+        mode: '0644'
+
+    # 任務 7: 啟用並啟動防火牆服務
+    - name: Enable and start firewall service
+      ansible.builtin.service:
+        name: "{{ firewall_pkg }}"
+        enabled: yes
+        state: started
+
+    # 任務 8: 設定防火牆規則允許 HTTPS
+    - name: Allow HTTPS service through firewall
+      ansible.builtin.firewalld:
+        service: https
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+    # 任務 9: 啟用並啟動 Web 服務
+    - name: Enable and start web service
+      ansible.builtin.service:
+        name: "{{ web_svc }}"
+        enabled: yes
+        state: started
