@@ -1,4 +1,76 @@
+---
+- name: Web Server Configuration Playbook
+  hosts: all
+  become: yes
+  vars:
+    # 套裝軟體變數
+    firewall_pkg: firewalld
+    web_pkg: httpd
+    ssl_pkg: mod_ssl
+    
+    # 檔案路徑變數
+    httpdconf_src: files/httpd.conf
+    httpdconf_dest: /etc/httpd/conf/httpd.conf
+    
+    # Secrets 目錄變數
+    secrets_dir: /etc/httpd/secrets
+    secrets_src: files/htpasswd
+    secrets_dest: /etc/httpd/secrets/htpasswd
+    
+    # .htaccess 變數
+    htaccess_src: files/.htaccess
+    
+    # Web 根目錄變數
+    web_root: /var/www/html
+    
+    # 服務變數
+    web_svc: httpd
 
+  tasks:
+    # 任務 1: 安裝必要套裝軟體
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - "{{ firewall_pkg }}"
+          - "{{ web_pkg }}"
+          - "{{ ssl_pkg }}"
+        state: latest
+
+    # 任務 2: 複製 httpd.conf 檔案
+    - name: Copy httpd.conf configuration file
+      ansible.builtin.copy:
+        src: "{{ httpdconf_src }}"
+        dest: "{{ httpdconf_dest }}"
+        owner: root
+        group: root
+        mode: '0644'
+
+    # 任務 3: 建立 secrets 目錄
+    - name: Create secrets directory
+      ansible.builtin.file:
+        path: "{{ secrets_dir }}"
+        state: directory
+        owner: apache
+        group: apache
+        mode: '0500'
+
+    # 任務 4: 複製 htpasswd 檔案
+    - name: Copy htpasswd file for web authentication
+      ansible.builtin.copy:
+        src: "{{ secrets_src }}"
+        dest: "{{ secrets_dest }}"
+        owner: apache
+        group: apache
+        mode: '0400'
+
+    # 任務 5: 建立 .htaccess 檔案
+    - name: Create .htaccess file in web root
+      ansible.builtin.copy:
+        src: "{{ htaccess_src }}"
+        dest: "{{ web_root }}/.htaccess"
+        owner: apache
+        group: apache
+        mode: '0400'
 
     # 任務 6: 建立 index.html 檔案
     - name: Create index.html with system information
