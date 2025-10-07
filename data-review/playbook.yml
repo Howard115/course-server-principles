@@ -102,3 +102,27 @@
         name: "{{ web_svc }}"
         enabled: yes
         state: started
+
+- name: Test Web Server Authentication
+  hosts: localhost
+  become: no
+  vars:
+    web_user: guest
+  
+  tasks:
+    # 任務 1: 使用基本驗證從 serverb.lab.example.com 請求內容
+    - name: Request content from web server with basic authentication
+      ansible.builtin.uri:
+        url: "https://serverb.lab.example.com"
+        method: GET
+        user: "{{ web_user }}"
+        password: "{{ web_pass }}"
+        validate_certs: no
+        status_code: 200
+        return_content: yes
+      register: web_response
+
+    # 任務 2: 列印從 Web 伺服器返回的內容
+    - name: Display content returned from web server
+      ansible.builtin.debug:
+        msg: "{{ web_response.content }}"
