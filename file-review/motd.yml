@@ -1,0 +1,36 @@
+---
+- name: Deploy MOTD and system files
+  hosts: all
+  become: yes
+  remote_user: devops
+  tasks:
+    - name: Deploy MOTD template
+      ansible.builtin.template:
+        src: motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Check if /etc/motd exists
+      ansible.builtin.stat:
+        path: /etc/motd
+      register: motd_stat
+
+    - name: Display MOTD file information
+      ansible.builtin.debug:
+        var: motd_stat
+
+    - name: Copy issue file to /etc/
+      ansible.builtin.copy:
+        src: files/issue
+        dest: /etc/issue
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure /etc/issue.net is a symlink to /etc/issue
+      ansible.builtin.file:
+        src: /etc/issue
+        dest: /etc/issue.net
+        state: link
