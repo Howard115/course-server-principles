@@ -1,0 +1,12 @@
+---
+# handlers file for roles/apache.developer_configs
+
+- name: restart firewalld
+  ansible.builtin.service:
+    name: firewalld
+    state: restarted
+
+- name: restart apache
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
