@@ -1,6 +1,5 @@
-servera.lab.example.com
-serverb.lab.example.com
+[controlnode]
+workstation.lab.example.com
 
-
-[dnsservers]
+[dev_webserver]
 servera.lab.example.com

@@ -1,0 +1,28 @@
+---
+- name: Configure Dev Web Server
+  hosts: dev_webserver
+  force_handlers: true
+  
+  pre_tasks:
+    - name: Configure SELinux
+      block:
+        - name: Apply SELinux role
+          ansible.builtin.include_role:
+            name: redhat.rhel_system_roles.selinux
+      rescue:
+        - name: Check for failures and reboot if needed
+          ansible.builtin.fail:
+            msg: "SELinux role failed"
+          when: not ansible_facts.selinux_reboot_required | default(false)
+        
+        - name: Reboot if needed
+          ansible.builtin.reboot:
+          when: ansible_facts.selinux_reboot_required | default(false)
+        
+        - name: Re-apply SELinux role after reboot
+          ansible.builtin.include_role:
+            name: redhat.rhel_system_roles.selinux
+  
+  roles:
+    - apache.developer_configs
+

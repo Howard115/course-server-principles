@@ -1,0 +1,58 @@
+場景：
+• 公司要您準備一個伺服器，用於托管所有網頁開發人員的開發代碼。您的任務是編寫一個劇本來設定
+這個開發網路伺服器。
+• 開發伺服器必須滿足幾個要求：
+• 開發伺服器的配置必須與生產伺服器的配置相匹配。生產伺服器是使用由組織的基礎設施團隊開發的Ansible角色配置
+的。
+• 在開發伺服器上，每位開發者都有一個目錄來托管代碼和內容。每位開發者的內容都通過使用指定的非標準通訊埠來
+存取。
+• SELinux設置為強制模式，並使用目標政策。
+• 您的劇本必須：
+• 使用一個角色在伺服器上為每位開發者設定目錄和通訊埠。您必須編寫這個角色。
+• 這個角色依賴於一個Apache的角色，該角色由已經被公司的其他人寫好了。您應該定義依賴關係，指定角色的版本
+v1.4。依賴的Git軟體庫是：git@workstation.lab.example.com:infra/apache
+• 使用redhat.rhel_system_roles.selinux角色配置SELinux，允許外部主機訪問您的伺服器使用的非標準HTTP端口。您
+要提供一個selinux.yml變數檔案，在group_vars目錄中使用它來傳遞正確的設置給該角色。
+
+
+• 目標：
+1. 切換到 /home/student/role-review 目錄。
+2. 使用 ansible-galaxy collection install 命令從提供的 tar 檔案安裝 redhat.rhel_system_roles 集合，
+然後驗證它是否正確安裝。
+3. 建立一個名為 web_dev_server.yml 的劇本，其中包含一個名為 Configure Dev Web Server 的劇本。
+設定此劇本以針對 dev_webserver 主機群組。暫時不要在劇本中添加任何角色或任務。確保劇本強
+制執行處理程序，因為在開發劇本時可能會遇到錯誤。
+4. 驗證劇本的語法，然後執行劇本。語法檢查應該通過，並且劇本應該能夠成功運行。由於還沒有角
+色或任務，此劇本僅收集事實訊息。
+5. 確保安裝劇本中角色的所有依賴角色。例如，您稍後在Lab中編寫的 apache.developer_configs 角
+色依賴於 infra.apache 角色。
+建立一個名為 roles/requirements.yml 的檔案。該檔案從
+git@workstation.lab.example.com:infra/apache 的 Git 儲存庫安裝角色，使用版本 v1.4，並在本地
+將其命名為 infra.apache。您可以假設您的 SSH 金鑰已配置好，可以自動從此儲存庫獲取角色。使
+用 ansible-galaxy 命令安裝該角色。
+6. 在 roles 子目錄中初始化一個名為 apache.developer_configs 的新角色。為新角色添加
+infra.apache 角色作為依賴，使用與 roles/requirements.yml 檔案中相同的名稱、來源、版本和版本
+控制系統資訊。
+專案目錄中的 developer_tasks.yml 檔案包含角色的任務。將此檔案移動到角色目錄層次結構中適用
+於該角色使用的任務檔案的正確位置，替換該位置的現有檔案。專案目錄中的 developer.conf.j2 檔
+案是任務檔案使用的 Jinja2 模板。將此檔案移動到用於該角色的模板檔案的正確位置。
+
+7. apache.developer_configs 角色為定義在名為 web_developers 的變數中的使用者清單建
+立使用者帳號並設定伺服器實例。專案目錄中的 web_developers.yml 檔案定義了
+web_developers 變數，這是角色的使用者清單。
+檢查此檔案並將其放在正確的位置，為您的開發伺服器主機群組定義 web_developers 變
+數。
+8. 將 apache.developer_configs 角色添加到 web_dev_server.yml 劇本中。
+9. 驗證劇本的語法，然後執行劇本。語法檢查應該通過，但當 infra.apache 角色嘗試重啟
+Apache HTTPD 時，劇本應該會失敗。
+10. 由於用於您的開發者的網路通訊埠的 SELinux 標籤錯誤，Apache HTTPD 在前面的步驟
+中無法重啟。
+您可以使用提供的變數檔案 selinux.yml，與 redhat.rhel_system_roles.selinux 角色一起
+修復此問題。
+為您在 web_dev_server.yml 劇本中建立一個 pre_tasks 部分。在該部分中，使用一個任
+務以 block/rescue 結構包含 redhat.rhel_system_roles.selinux 角色，以確保其正確應用。
+將 selinux.yml 檔案移動到正確的位置，以便為 dev_webserver 主機群組設置其變數。
+11. 驗證最終的 web_dev_server.yml 劇本並進行語法檢查。語法檢查應該通過。
+12. 執行 web_dev_server.yml 劇本。它應該成功。
+13. 使用 curl 測試開發伺服器的 port 80, 9081 與 9082。驗證所有端點都可存取並為每個開發
+者提供內容
