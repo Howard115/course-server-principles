@@ -1,0 +1,20 @@
+---
+- name: Install and enable httpd service
+  import_tasks: install_and_enable.yml
+  vars:
+    package_name: httpd
+    service_name: httpd
+
+- name: Tuning configuration installed
+  ansible.builtin.copy:
+    src: files/tune.conf
+    dest: /etc/httpd/conf.d/tune.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart httpd
+
+
+
+...
